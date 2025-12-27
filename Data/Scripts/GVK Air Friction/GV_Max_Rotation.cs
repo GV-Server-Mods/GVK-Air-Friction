@@ -14,13 +14,13 @@ namespace GV_Max_Rotation
     [MySessionComponentDescriptor(MyUpdateOrder.Simulation, 999)]
     public class RelativeTopSpeed : MySessionComponentBase
     {
-        public const float MaxMassAngMult = 0.1f;
-        public const float MaxSpeedAngMult = 0.25f;
-        public const float MaxMass = 5000000f;
+        public const float MaxMassAngMult = 0.1f; //smaller fraction means lower max rotation, 1 means no effect
+        public const float MaxSpeedAngMult = 0.25f; //smaller fraction means lower max rotation, 1 means no effect
+        public const float MaxMass = 8000000f;
         public const float MinMass = 1f;
         public const float MaxSpeed = 100f;
         public const float MinSpeed = 1f;
-        public const float MaxAng = 5f;
+        public const float MaxAng = 10f;
         public const float MinAng = 0.01f;
 
         private byte waitInterval = 0;
@@ -45,7 +45,7 @@ namespace GV_Max_Rotation
         private void AddGrid(IMyEntity ent)
         {
             MyCubeGrid grid = ent as MyCubeGrid;
-            if (grid == null || grid.Physics == null)
+            if (grid == null || grid.Physics == null || grid.GridSizeEnum == MyCubeSize.Small)
                 return;
 
             //Ignoring suspension wheels and debris
@@ -61,7 +61,7 @@ namespace GV_Max_Rotation
         private void RemoveGrid(IMyEntity ent)
         {
             MyCubeGrid grid = ent as MyCubeGrid;
-            if (grid == null || grid.Physics == null) { return; }
+            if (grid == null || grid.Physics == null || grid.GridSizeEnum == MyCubeSize.Small) { return; }
 
             grid.OnStaticChanged -= RegisterOrUpdateGridStatus;
             ActiveGrids.Remove(grid);
@@ -169,11 +169,10 @@ namespace GV_Max_Rotation
 
             if (ang.LengthSquared() > (MinAng * MinAng))
             {
-                //var angMassReduction = 1 + ((mass - MinMass) / (MaxMass - MinMass)) * (MaxMassAngMult - 1);
+                var angMassReduction = 1 + ((mass - MinMass) / (MaxMass - MinMass)) * (MaxMassAngMult - 1);
                 var angSpeedReduction = 1 + ((speed - MinSpeed) / (MaxSpeed - MinSpeed) * (MaxSpeedAngMult - 1));
-                //float reducedAng = MathHelper.Clamp(MaxAng * angMassReduction * angSpeedReduction, MinAng, MaxAng);
-                float reducedAng = MathHelper.Clamp(MaxAng * angSpeedReduction, MinAng, MaxAng);
-               if (ang.Length() > reducedAng)
+                float reducedAng = MathHelper.Clamp(MaxAng * angMassReduction * angSpeedReduction, MinAng, MaxAng);
+                if (ang.Length() > reducedAng)
                 {
                     ang = Vector3.Normalize(ang) * reducedAng;
                     grid.Physics.AngularVelocity = ang;
