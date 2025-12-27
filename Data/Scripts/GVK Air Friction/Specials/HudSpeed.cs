@@ -27,8 +27,12 @@ namespace ServerMod
             {
                 return "";
             }
-            return $"{t2:N0}-{t3:N0}";
-        }
+            if (t2 == t3)
+            {
+                return $"[{t2:N0} m/s]";
+            }
+            return $"[{t2:N0}-{t3:N0} m/s]";
+		}
     }
     
     public class MyHudSpeedInfo : MyHStat
@@ -47,9 +51,13 @@ namespace ServerMod
         public override string ToString()
         {
             var t1 = AirFrictionSession.LastFrameClientValues[AirFriction.CurrentSpeed];
-            return $"{t1:N1} m/s";
-        }
-    }
+            if (t1 < 10.0f) {
+                return $"{t1:N1} m/s";
+            } else {                
+                return $"{t1:N0} m/s";
+            }
+		}
+	}
     
     
     public class MyHudSpeed1 : MyHStat
@@ -101,8 +109,14 @@ namespace ServerMod
         public override void Update()
         {
             var min = AirFrictionSession.LastFrameClientValues[AirFriction.MinSpeed];
+            var max = AirFrictionSession.LastFrameClientValues[AirFriction.MaxSpeed];
+            if (min == max)
+            {
+                CurrentValue = 0f;
+                return;
+            }
             var current = AirFrictionSession.LastFrameClientValues[AirFriction.CurrentSpeed]-min;
-            var max = AirFrictionSession.LastFrameClientValues[AirFriction.MaxSpeed]-min;
+            max = max-min;
             if (current > 0)
             {
                 CurrentValue = (float) MathHelper.Clamp(current/max, 0, 1);
@@ -123,7 +137,7 @@ namespace ServerMod
             return "";
         }
     }
-    
+	
     public abstract class MyHStat : IMyHudStat
     {
         public virtual float MaxValue => 1f;

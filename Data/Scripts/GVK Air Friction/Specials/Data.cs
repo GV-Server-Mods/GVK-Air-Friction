@@ -123,6 +123,11 @@ namespace ServerMod
 
         public double Calculate(float spd, float min, float max, double mass, bool isCharacter)
         {
+
+            if (min == max) {
+                return -MaxAcceleration;    
+            }
+
             var diff = max - min;
             var nowdiff = spd - min;
             var mlt = nowdiff/diff;
