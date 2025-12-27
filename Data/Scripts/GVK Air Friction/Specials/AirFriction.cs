@@ -167,7 +167,7 @@ namespace ServerMod
             d.Normalize();
 
 
-            character.Physics.AddForce(MyPhysicsForceType.APPLY_WORLD_FORCE, d * power, null, null);
+            character.Physics.AddForce(MyPhysicsForceType.APPLY_WORLD_FORCE, d * power, null, null, max);
         }
         
         public static void ApplyFrictionShip(Ship ship)
