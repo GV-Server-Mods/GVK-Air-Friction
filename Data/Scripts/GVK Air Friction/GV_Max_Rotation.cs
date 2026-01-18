@@ -14,14 +14,14 @@ namespace GV_Max_Rotation
     [MySessionComponentDescriptor(MyUpdateOrder.Simulation, 999)]
     public class RelativeTopSpeed : MySessionComponentBase
     {
-        public const float MaxMassAngMult = 0.1f; //smaller fraction means lower max rotation, 1 means no effect
-        public const float MaxSpeedAngMult = 0.25f; //smaller fraction means lower max rotation, 1 means no effect
-        public const float MaxMass = 8000000f;
+        public const float MaxMassAngMult = 0.01f; //smaller fraction means lower max rotation, 1 means no effect
+        public const float MaxSpeedAngMult = 0.15f; //smaller fraction means lower max rotation, 1 means no effect
+        public const float MaxMass = 10000000f;
         public const float MinMass = 1f;
-        public const float MaxSpeed = 100f;
+        public const float MaxSpeed = 80f;
         public const float MinSpeed = 1f;
         public const float MaxAng = 10f;
-        public const float MinAng = 0.01f;
+        public const float MinAng = 0.001f;
 
         private byte waitInterval = 0;
         private readonly List<MyCubeGrid> ActiveGrids = new List<MyCubeGrid>();
@@ -163,7 +163,7 @@ namespace GV_Max_Rotation
             MyCubeGrid grid = ActiveGrids[index];
 
             float speed = MathHelper.Clamp(Math.Abs(grid.Physics.Speed), MinSpeed, MaxSpeed);
-            float mass = grid.Physics.Mass;
+            float mass = MathHelper.Clamp(Math.Abs(grid.Physics.Mass), MinMass, MaxMass);
 
             Vector3 ang = grid.Physics.AngularVelocity;
 
@@ -172,7 +172,7 @@ namespace GV_Max_Rotation
                 var angMassReduction = 1 + ((mass - MinMass) / (MaxMass - MinMass)) * (MaxMassAngMult - 1);
                 var angSpeedReduction = 1 + ((speed - MinSpeed) / (MaxSpeed - MinSpeed) * (MaxSpeedAngMult - 1));
                 float reducedAng = MathHelper.Clamp(MaxAng * angMassReduction * angSpeedReduction, MinAng, MaxAng);
-                if (ang.Length() > reducedAng)
+                if (ang.LengthSquared() > (reducedAng * reducedAng))
                 {
                     ang = Vector3.Normalize(ang) * reducedAng;
                     grid.Physics.AngularVelocity = ang;
