@@ -14,14 +14,14 @@ namespace GV_Max_Rotation
     [MySessionComponentDescriptor(MyUpdateOrder.Simulation, 999)]
     public class RelativeTopSpeed : MySessionComponentBase
     {
-        public const float MaxMassAngMult = 0.01f; //smaller fraction means lower max rotation, 1 means no effect
-        public const float MaxSpeedAngMult = 0.15f; //smaller fraction means lower max rotation, 1 means no effect
+        public const float MaxMassAngMult = 0.1f; //smaller fraction means lower max rotation, 1 means no effect
+        public const float MaxSpeedAngMult = 0.25f; //smaller fraction means lower max rotation, 1 means no effect
         public const float MaxMass = 10000000f;
         public const float MinMass = 1f;
         public const float MaxSpeed = 80f;
         public const float MinSpeed = 1f;
         public const float MaxAng = 10f;
-        public const float MinAng = 0.001f;
+        public const float MinAng = 1f;
 
         private byte waitInterval = 0;
         private readonly List<MyCubeGrid> ActiveGrids = new List<MyCubeGrid>();
