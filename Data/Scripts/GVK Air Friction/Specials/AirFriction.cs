@@ -35,7 +35,7 @@ namespace ServerMod
             for (var index = GridsCache.Count - 1; index >= 0; index--)
             {
                 var grid = GridsCache[index];
-                if (grid.Closed || grid.MarkedForClose || grid.Physics == null || !grid.Physics.Enabled || grid.IsPreview || grid.isFrozen())
+                if (grid.Closed || grid.MarkedForClose || grid.Physics == null || !grid.Physics.Enabled || grid.IsPreview || grid.isFrozen() || grid.BlocksCount <= 2)
                 {
                     values[MinSpeed] = 0;
                     values[MaxSpeed] = 0;
@@ -185,7 +185,7 @@ namespace ServerMod
             for (var index = GridsCache.Count - 1; index >= 0; index--)
             {
                 var grid = GridsCache[index];
-                if (grid.Closed || grid.MarkedForClose || grid.Physics == null || !grid.Physics.Enabled || grid.IsPreview || grid.isFrozen())
+                if (grid.Closed || grid.MarkedForClose || grid.Physics == null || !grid.Physics.Enabled || grid.IsPreview || grid.isFrozen() || grid.BlocksCount <= 2)
                 {
                     GridsCache.RemoveAt(index);
                     return;
