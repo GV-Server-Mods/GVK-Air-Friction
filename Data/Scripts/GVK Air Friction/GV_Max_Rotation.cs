@@ -61,8 +61,9 @@ namespace GV_Max_Rotation
         private void RemoveGrid(IMyEntity ent)
         {
             MyCubeGrid grid = ent as MyCubeGrid;
-            if (grid == null || grid.Physics == null || grid.GridSizeEnum == MyCubeSize.Small) { return; }
+            if (grid == null || grid.GridSizeEnum == MyCubeSize.Small) { return; }
 
+            //Physics may already be null when a closing grid fires OnEntityRemove - always evict from lists
             grid.OnStaticChanged -= RegisterOrUpdateGridStatus;
             ActiveGrids.Remove(grid);
             PassiveGrids.Remove(grid);
@@ -161,6 +162,8 @@ namespace GV_Max_Rotation
         {
 
             MyCubeGrid grid = ActiveGrids[index];
+            if (grid == null || grid.MarkedForClose || grid.Physics == null)
+                return;
 
             float speed = MathHelper.Clamp(Math.Abs(grid.Physics.Speed), MinSpeed, MaxSpeed);
             float mass = MathHelper.Clamp(Math.Abs(grid.Physics.Mass), MinMass, MaxMass);
