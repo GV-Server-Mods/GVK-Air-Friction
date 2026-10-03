@@ -29,6 +29,8 @@ namespace ServerMod
             }
             
             Vector3 velocity = Vector3.Zero;
+            Vector3 momentum = Vector3.Zero;
+            float totalMass = 0f;
             bool hasSmall = false;
             bool hasLarge = false;
             
@@ -48,7 +50,10 @@ namespace ServerMod
                 hasLarge |= grid.GridSizeEnum == MyCubeSize.Large;
                 hasSmall |= grid.GridSizeEnum == MyCubeSize.Small;
                 
+                var gridMass = grid.Physics.Mass;
                 velocity += grid.Physics.LinearVelocity;
+                momentum += grid.Physics.LinearVelocity * gridMass;
+                totalMass += gridMass;
             }
             
             if (GridsCache.Count == 0)
@@ -60,7 +65,8 @@ namespace ServerMod
                 return;
             }
             
-            velocity /= GridsCache.Count;
+            // Group velocity = velocity of the combined center of mass, so off-center subgrids don't skew it while turning
+            velocity = totalMass > 0f ? momentum / totalMass : velocity / GridsCache.Count;
             var spd = velocity.Length();
             var settings = AirFrictionSession.Instance.Settings;
 
@@ -179,6 +185,8 @@ namespace ServerMod
             }
             
             Vector3 velocity = Vector3.Zero;
+            Vector3 momentum = Vector3.Zero;
+            float totalMass = 0f;
             bool hasSmall = false;
             bool hasLarge = false;
             
@@ -194,7 +202,10 @@ namespace ServerMod
                 hasLarge |= grid.GridSizeEnum == MyCubeSize.Large;
                 hasSmall |= grid.GridSizeEnum == MyCubeSize.Small;
                 
+                var gridMass = grid.Physics.Mass;
                 velocity += grid.Physics.LinearVelocity;
+                momentum += grid.Physics.LinearVelocity * gridMass;
+                totalMass += gridMass;
             }
             
             if (GridsCache.Count == 0)
@@ -202,7 +213,8 @@ namespace ServerMod
                 return;
             }
             
-            velocity /= GridsCache.Count;
+            // Group velocity = velocity of the combined center of mass, so off-center subgrids don't skew it while turning
+            velocity = totalMass > 0f ? momentum / totalMass : velocity / GridsCache.Count;
             var spd = velocity.Length();
             var settings = AirFrictionSession.Instance.Settings;
             if (spd < settings.MinSpeed && settings.SpecCore == null)
